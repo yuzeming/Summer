@@ -1,0 +1,59 @@
+---
+layout: page
+title: "实践地图"
+description: ""
+---
+<!DOCTYPE html>
+
+<style type="text/css">
+body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;}
+.logo {width:100px;}
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=9166a20402293fd2c5a30177f220f846"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+<script type="text/javascript" src="./map-data.js"></script>
+
+
+<div id="allmap" style="width: 100%;height: 400px;"></div>
+
+<script type="text/javascript">
+
+// 百度地图API功能
+var map = new BMap.Map("allmap");
+map.centerAndZoom(new BMap.Point(120, 30), 6);
+map.enableScrollWheelZoom();
+
+var markerArr = [];
+var pt = null;
+var infoWindow = null;
+var marker = null;
+for (i in mapdata) {
+   pt = new BMap.Point(mapdata[i].x,mapdata[i].y);
+   var sContent = new String("");
+   for (j in mapdata[i].company) {
+		sContent=sContent+"<a href='"+mapdata[i].company[j].url+"'>"+"<b>"+mapdata[i].company[j].name+"</b><br>"+"<img class='logo' src='"+mapdata[i].company[j].logo+"'></a><br>";
+   }
+   
+   marker = new BMap.Marker(pt);
+   marker.infoWindow = new BMap.InfoWindow(sContent);  
+   
+   marker.addEventListener("click", function(){          
+	   this.openInfoWindow(this.infoWindow);
+	   var mk = this;
+	   var logo = document.getElementsByClassName('logo');
+	   for (i in logo){
+			logo[i].onload = function (){
+			mk.infoWindow.redraw();   
+	   }
+	   }
+   } )
+   markerArr.push(marker);
+}
+   
+//最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+var markerClusterer = new BMapLib.MarkerClusterer(map, {markers:markerArr});
+
+</script>
+
